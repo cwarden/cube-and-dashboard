@@ -1,0 +1,6 @@
+[submodule "log-dashboard"]
+	path = log-dashboard
+	url = git@github.com:greatvines/log-dashboard.git
+[submodule "cube"]
+	path = cube
+	url = git@github.com:greatvines/cube.git
