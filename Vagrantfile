@@ -11,6 +11,8 @@ if [ ! -f /etc/stunnel/cert.pem ]; then
   sudo openssl genrsa -out key.pem 2048
   sudo openssl req -new -x509 -key key.pem -out cert.pem -days 3650 -subj /C=US/ST=Oregon/L=Portland/O=GreatVines/CN=localhost/
 fi
+# Copy cert back to host so it can be imported into keystore for browser
+sudo cp /etc/stunnel/cert.pem /srv/stunnel
 sudo ln -nsf /srv/stunnel/cube.conf /etc/stunnel/
 sudo perl -pi -e 's/ENABLED=./ENABLED=1/' /etc/default/stunnel4
 
