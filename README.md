@@ -1,4 +1,6 @@
-# Setting up Cube and Log Dashboard Development Environment
+# Cube and Log Dashboard Development Environment
+
+## Getting Started
 
 Install Vagrant and Virtualbox.
 
