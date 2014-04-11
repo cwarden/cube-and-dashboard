@@ -3,7 +3,7 @@ VAGRANTFILE_API_VERSION = "2"
 $script = <<SCRIPT
 # Install required packages
 sudo apt-get update
-sudo apt-get -y install git mongodb g++ stunnel4 curl
+sudo apt-get -y install git mongodb g++ stunnel4 curl make
 
 # Setup stunnel for SSL access
 if [ ! -f /etc/stunnel/cert.pem ]; then
