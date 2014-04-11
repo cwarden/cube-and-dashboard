@@ -31,6 +31,7 @@ npm install
 sudo nf -p 1080 -a cube -u vagrant export -o /etc/init
 
 cd /srv/log-dashboard
+test -f .env || cp .env.example .env
 npm install
 sudo nf -p 3000 -a dashboard -u vagrant -j Procfile.debug export -o /etc/init
 
