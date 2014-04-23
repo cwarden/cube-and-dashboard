@@ -1,0 +1,13 @@
+collector:
+   build: cube
+   environment:
+     SERVICE: collector
+   volumes:
+     - ./cube:/srv/cube
+
+evaluator:
+   build: cube
+   environment:
+     SERVICE: evaluator
+   volumes:
+     - ./cube:/srv/cube
