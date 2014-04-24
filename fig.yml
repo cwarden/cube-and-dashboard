@@ -1,13 +1,26 @@
+mongodb:
+   image: robinvdvleuten/mongo
+
 collector:
    build: cube
+   links:
+      - mongodb
+   ports:
+      - "1080:1080"
    environment:
      SERVICE: collector
+     COLLECTOR_AUTHENTICATOR: trusted_recording_signed_request
    volumes:
      - ./cube:/srv/cube
 
 evaluator:
    build: cube
+   links:
+      - mongodb
+   ports:
+      - "1081:1080"
    environment:
      SERVICE: evaluator
+     EVALUATOR_AUTHENTICATOR: allow_all
    volumes:
      - ./cube:/srv/cube
