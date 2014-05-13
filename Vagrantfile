@@ -42,25 +42,48 @@ sudo service dashboard restart
 SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "precise32"
-  config.vm.box_url ="http://files.vagrantup.com/precise32.box"
-  # Ports for cube collector, evaluator, and log dashboard
-  config.vm.network :forwarded_port, guest: 1080, host: 1080
-  config.vm.network :forwarded_port, guest: 1180, host: 1180
-  config.vm.network :forwarded_port, guest: 3000, host: 3000
-  # SSL ports
-  config.vm.network :forwarded_port, guest: 10800, host: 10800
-  config.vm.network :forwarded_port, guest: 11800, host: 11800
-  config.vm.network :forwarded_port, guest: 30000, host: 30000
-  config.vm.hostname = "cube.local"
 
-  config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--memory", 768]
+  config.vm.define "mongodb" do |mongodb|
+    mongodb.vm.provider "docker" do |d|
+      d.image = "robinvdvleuten/mongo"
+    end
   end
-  config.vm.synced_folder "cube/", "/srv/cube"
-  config.vm.synced_folder "log-dashboard/", "/srv/log-dashboard"
-  config.vm.synced_folder "stunnel/", "/srv/stunnel"
 
-  config.vm.provision "shell", inline: $script, privileged: false
+  config.vm.define "collector" do |collector|
+    collector.vm.provider "docker" do |d|
+      d.build_dir = "cube"
+      d.link "mongodb"
+      d.env SERVICE: "collector", COLLECTOR_AUTHENTICATOR: "trusted_recording_signed_request"
+    end
+    collector.vm.network :forwarded_port, guest: 1080, host: 1080
+    collector.vm.synced_folder "cube/", "/srv/cube"
+  end
+
+  config.vm.define "evaluator" do |evaluator|
+    evaluator.vm.provider "docker" do |d|
+      d.build_dir = "cube"
+      d.link "mongodb"
+      d.env SERVICE: "evaluator", EVALUATOR_AUTHENTICATOR: "allow_all"
+    end
+    evaluator.vm.network :forwarded_port, guest: 1080, host: 1181
+    evaluator.vm.synced_folder "cube/", "/srv/cube"
+  end
+
+
+  # Ports for cube collector, evaluator, and log dashboard
+#  config.vm.network :forwarded_port, guest: 3000, host: 3000
+  # SSL ports
+#  config.vm.network :forwarded_port, guest: 10800, host: 10800
+#  config.vm.network :forwarded_port, guest: 11800, host: 11800
+#  config.vm.network :forwarded_port, guest: 30000, host: 30000
+#  config.vm.hostname = "cube.local"
+
+#  config.vm.provider :virtualbox do |vb|
+#    vb.customize ["modifyvm", :id, "--memory", 768]
+#  end
+#  config.vm.synced_folder "log-dashboard/", "/srv/log-dashboard"
+#  config.vm.synced_folder "stunnel/", "/srv/stunnel"
+#
+#  config.vm.provision "shell", inline: $script, privileged: false
 
 end
