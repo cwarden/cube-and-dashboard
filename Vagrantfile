@@ -41,19 +41,21 @@ sudo service dashboard restart
 
 SCRIPT
 
+Vagrant.require_version ">= 1.6.2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "mongodb" do |mongodb|
     mongodb.vm.provider "docker" do |d|
       d.image = "robinvdvleuten/mongo"
+      d.name = "mongodb"
     end
   end
 
   config.vm.define "collector" do |collector|
     collector.vm.provider "docker" do |d|
       d.build_dir = "cube"
-      d.link "mongodb"
-      d.env SERVICE: "collector", COLLECTOR_AUTHENTICATOR: "trusted_recording_signed_request"
+      d.link "mongodb:mongodb"
+      d.env = { "SERVICE" => "collector", "COLLECTOR_AUTHENTICATOR" => "trusted_recording_signed_request" }
     end
     collector.vm.network :forwarded_port, guest: 1080, host: 1080
     collector.vm.synced_folder "cube/", "/srv/cube"
@@ -62,10 +64,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "evaluator" do |evaluator|
     evaluator.vm.provider "docker" do |d|
       d.build_dir = "cube"
-      d.link "mongodb"
-      d.env SERVICE: "evaluator", EVALUATOR_AUTHENTICATOR: "allow_all"
+      d.link "mongodb:mongodb"
+      d.env = { "SERVICE" => "evaluator", "EVALUATOR_AUTHENTICATOR" => "allow_all" }
     end
-    evaluator.vm.network :forwarded_port, guest: 1080, host: 1181
+    evaluator.vm.network :forwarded_port, guest: 1080, host: 1081
     evaluator.vm.synced_folder "cube/", "/srv/cube"
   end
 
