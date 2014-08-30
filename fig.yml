@@ -1,5 +1,6 @@
 mongodb:
-   image: robinvdvleuten/mongo
+   image: dockerfile/mongodb
+   command: mongod --smallfiles
 
 collector:
    build: cube
@@ -9,7 +10,7 @@ collector:
       - "1080:1080"
    environment:
      SERVICE: collector
-     COLLECTOR_AUTHENTICATOR: trusted_recording_signed_request
+     COLLECTOR_AUTHENTICATOR: allow_all
    volumes:
      - ./cube:/srv/cube
 
